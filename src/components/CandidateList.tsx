@@ -50,6 +50,10 @@ export default function CandidateList({
 
 
 
+  const avgScore = candidates.length > 0
+    ? (candidates.reduce((acc, c) => acc + (getScoreForCandidate(c.id)?.overall_score || c.overall_score), 0) / candidates.length).toFixed(1)
+    : 0;
+
   if (candidates.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
@@ -60,11 +64,23 @@ export default function CandidateList({
 
   return (
     <div className="overflow-x-auto">
+      <div className="px-8 py-6 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Talent Pool</span>
+          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-md">{candidates.length}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Average ATS Integrity</span>
+          <span className="text-sm font-black text-slate-900">{avgScore}%</span>
+        </div>
+      </div>
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-slate-50">
             <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Candidate Identity</th>
-            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Competency Match</th>
+            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Top Expertise</th>
+            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">ATS Integrity</th>
+            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Match Quality</th>
             <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Status</th>
             <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Control</th>
           </tr>
@@ -73,6 +89,7 @@ export default function CandidateList({
           {candidates.map(candidate => {
             const score = getScoreForCandidate(candidate.id);
             const displayScore = score?.overall_score || candidate.overall_score;
+            const topSkills = score?.skills.slice(0, 3) || [];
 
             return (
               <tr key={candidate.id} className="group hover:bg-slate-50/50 transition-all duration-300">
@@ -88,11 +105,30 @@ export default function CandidateList({
                   </div>
                 </td>
                 <td className="px-8 py-6">
+                  <div className="flex flex-wrap gap-1.5">
+                    {topSkills.length > 0 ? topSkills.map(skill => (
+                      <span key={skill} className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-black rounded-lg uppercase tracking-tighter">
+                        {skill}
+                      </span>
+                    )) : (
+                      <span className="text-[10px] text-slate-300 italic font-bold">Awaiting Analysis...</span>
+                    )}
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <div className="flex flex-col">
+                    <span className={`text-base font-black tracking-tighter ${getScoreColor(displayScore)}`}>
+                      {displayScore.toFixed(1)}/100
+                    </span>
+                    <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">AI Score Matrix</span>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
                     <span className={`w-10 text-xs font-black tracking-tighter ${getScoreColor(displayScore)}`}>
                       {displayScore.toFixed(0)}%
                     </span>
-                    <div className="w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner flex-shrink-0">
+                    <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner flex-shrink-0">
                       <div
                         className={`h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-1000 group-hover:opacity-80`}
                         style={{ width: `${displayScore}%` }}

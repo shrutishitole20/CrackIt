@@ -8,10 +8,12 @@ interface AnalyticsSummaryProps {
 
 export default function AnalyticsSummary({ candidates, scores }: AnalyticsSummaryProps) {
   const totalCandidates = candidates.length;
-  const avgScore =
-    totalCandidates > 0
-      ? (candidates.reduce((sum, c) => sum + c.overall_score, 0) / totalCandidates)
-      : 0;
+  const avgScore = totalCandidates > 0
+    ? candidates.reduce((sum, c) => {
+      const scoreObj = scores.find(s => s.candidate_id === c.id);
+      return sum + (scoreObj?.overall_score || c.overall_score || 0);
+    }, 0) / totalCandidates
+    : 0;
 
   const topSkills = scores.length > 0
     ? scores
