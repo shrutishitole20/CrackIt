@@ -48,18 +48,7 @@ export default function CandidateList({
     return 'text-red-600';
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-slate-100 text-slate-800';
-    }
-  };
+
 
   if (candidates.length === 0) {
     return (
@@ -70,75 +59,79 @@ export default function CandidateList({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-slate-50 border-b border-slate-200">
-            <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Name</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Email</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Score</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Status</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200">
-            {candidates.map(candidate => {
-              const score = getScoreForCandidate(candidate.id);
-              const displayScore = score?.overall_score || candidate.overall_score;
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="border-b border-slate-50">
+            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Candidate Identity</th>
+            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Competency Match</th>
+            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Status</th>
+            <th className="px-8 py-6 text-[10px] font-black text-slate-400 border-b border-slate-100 uppercase tracking-[0.2em]">Control</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-50">
+          {candidates.map(candidate => {
+            const score = getScoreForCandidate(candidate.id);
+            const displayScore = score?.overall_score || candidate.overall_score;
 
-              return (
-                <tr key={candidate.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <p className="font-medium text-slate-900">{candidate.name}</p>
-                    {candidate.location && (
-                      <p className="text-sm text-slate-600">{candidate.location}</p>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-slate-600">{candidate.email || '-'}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-blue-600"
-                          style={{ width: `${displayScore}%` }}
-                        ></div>
-                      </div>
-                      <span className={`font-bold text-sm ${getScoreColor(displayScore)}`}>
-                        {displayScore.toFixed(1)}
-                      </span>
+            return (
+              <tr key={candidate.id} className="group hover:bg-slate-50/50 transition-all duration-300">
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-400 font-bold text-xs shadow-inner uppercase">
+                      {candidate.name.substring(0, 2)}
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(candidate.status)}`}>
-                      {candidate.status}
+                    <div>
+                      <p className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-blue-600 transition-colors uppercase">{candidate.name}</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{candidate.email || 'No email specified'}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-4">
+                    <span className={`w-10 text-xs font-black tracking-tighter ${getScoreColor(displayScore)}`}>
+                      {displayScore.toFixed(0)}%
                     </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => onCandidateSelect(candidate)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="View Details"
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(candidate.id)}
-                        disabled={deleting === candidate.id}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                        title="Delete"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                    <div className="w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner flex-shrink-0">
+                      <div
+                        className={`h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-1000 group-hover:opacity-80`}
+                        style={{ width: `${displayScore}%` }}
+                      ></div>
                     </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <span className={`px-4 py-1.5 text-[10px] font-black rounded-full uppercase tracking-widest border ${candidate.status === 'completed' ? 'bg-green-50 text-green-700 border-green-100' :
+                    candidate.status === 'processing' ? 'bg-blue-50 text-blue-700 border-blue-100 animate-pulse' :
+                      'bg-slate-50 text-slate-600 border-slate-200'
+                    }`}>
+                    {candidate.status}
+                  </span>
+                </td>
+                <td className="px-8 py-6">
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                    <button
+                      onClick={() => onCandidateSelect(candidate)}
+                      className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition-all active:scale-90"
+                      title="View Analysis"
+                    >
+                      <Eye size={16} strokeWidth={2.5} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(candidate.id)}
+                      disabled={deleting === candidate.id}
+                      className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50/50 rounded-xl transition-all disabled:opacity-50 active:scale-90"
+                      title="Delete Candidate"
+                    >
+                      <Trash2 size={16} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

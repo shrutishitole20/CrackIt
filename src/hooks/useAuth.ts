@@ -9,14 +9,15 @@ export function useAuth() {
 
   useEffect(() => {
     setLoading(true);
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: any) => {
+      console.log("Current session:", session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => 
-      {
+      (_event: any, session: any) => {
+        console.log("Auth state change:", _event, session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
@@ -33,11 +34,14 @@ export function useAuth() {
         password,
       });
 
+      console.log("Auth.signUp response:", { data, signUpError });
+
       if (signUpError) throw signUpError;
 
       if (data.user?.id) {
+        console.log("Attempting to insert profile for user:", data.user.id);
         const { error: insertError } = await supabase
-          .from('users')
+          .from('profiles')
           .insert({
             id: data.user.id,
             email,
@@ -45,12 +49,16 @@ export function useAuth() {
             organization,
           });
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error("Profile insertion error:", insertError);
+          throw insertError;
+        }
       }
 
       return data;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Sign up failed';
+    } catch (err: any) {
+      console.error('Signup error detail:', err);
+      const message = err.message || err.error_description || 'Sign up failed';
       setError(message);
       throw err;
     }

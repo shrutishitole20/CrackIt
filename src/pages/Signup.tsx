@@ -32,8 +32,8 @@ export default function Signup() {
     try {
       await signUp(formData.email, formData.password, formData.fullName, formData.organization);
       navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign up failed');
+    } catch (err: any) {
+      setError(err.message || 'Sign up failed');
     }
   };
 
