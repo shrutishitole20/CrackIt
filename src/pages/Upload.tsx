@@ -87,10 +87,14 @@ export default function UploadResume() {
     }
 
     setIsProcessing(true);
+    setProcessStep(10);
+    setProcessStatus('Securing encrypted file stream...');
     setError('');
 
     try {
       // 1. Storage Upload
+      setProcessStep(30);
+      setProcessStatus('Uploading artifact to cloud vault...');
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `resumes/${user?.id}/${fileName}`;
@@ -102,6 +106,8 @@ export default function UploadResume() {
       if (uploadError) throw uploadError;
 
       // 2. Candidate Record
+      setProcessStep(50);
+      setProcessStatus('Establishing candidate profile matrix...');
       const { data: candidateData, error: candError } = await supabase
         .from('candidates')
         .insert({
@@ -116,6 +122,8 @@ export default function UploadResume() {
       if (candError) throw candError;
 
       // 3. Create Resume Record (fixes `resume_id` foreign key constraint in `resume_scores`)
+      setProcessStep(70);
+      setProcessStatus('Linking resume footprint...');
       const { data: resumeData, error: resumeError } = await supabase
         .from('resumes')
         .insert({
@@ -129,6 +137,8 @@ export default function UploadResume() {
       if (resumeError) throw resumeError;
 
       // 4. Try Neural Analysis via Edge Function
+      setProcessStep(85);
+      setProcessStatus('Initiating neuro-semantic NLP analysis...');
       const { data: parseData, error: parseError } = await supabase.functions.invoke('parse-resume', {
         body: {
           candidateId: candidateData.id,
@@ -173,7 +183,12 @@ export default function UploadResume() {
         }).eq('id', candidateData.id);
       }
 
-      navigate(`/analysis/${candidateData.id}`);
+      setProcessStep(100);
+      setProcessStatus('Analysis complete. Preparing dashboard view...');
+
+      setTimeout(() => {
+        navigate(`/analysis/${candidateData.id}`);
+      }, 1000);
     } catch (err: any) {
       setError(err.message || 'Quantum interface failure during upload.');
       setIsProcessing(false);
