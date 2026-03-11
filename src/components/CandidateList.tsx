@@ -99,9 +99,23 @@ export default function CandidateList({
                       {candidate.name.substring(0, 2)}
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-blue-600 transition-colors uppercase">{candidate.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-blue-600 transition-colors uppercase">{candidate.name}</p>
+                        <div className="flex gap-0.5">
+                          {[1, 2, 3].map((star) => (
+                            <div
+                              key={star}
+                              className={`w-1 h-1 rounded-full ${star <= Math.round(displayScore / 33)
+                                ? 'bg-blue-600'
+                                : 'bg-slate-200'
+                                }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{candidate.email || 'No email specified'}</p>
                     </div>
+
                   </div>
                 </td>
                 <td className="px-8 py-6">
@@ -117,23 +131,35 @@ export default function CandidateList({
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex flex-col">
-                    <span className={`text-base font-black tracking-tighter ${getScoreColor(displayScore)}`}>
-                      {displayScore.toFixed(1)}/100
-                    </span>
-                    <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">AI Score Matrix</span>
+                    {displayScore === 0 ? (
+                      <span className="text-[10px] text-blue-500 font-bold animate-pulse">Fetching Keywords & Score...</span>
+                    ) : (
+                      <>
+                        <span className={`text-base font-black tracking-tighter ${getScoreColor(displayScore)}`}>
+                          {displayScore.toFixed(1)}/100
+                        </span>
+                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">AI Score Matrix</span>
+                      </>
+                    )}
                   </div>
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
-                    <span className={`w-10 text-xs font-black tracking-tighter ${getScoreColor(displayScore)}`}>
-                      {displayScore.toFixed(0)}%
-                    </span>
-                    <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner flex-shrink-0">
-                      <div
-                        className={`h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-1000 group-hover:opacity-80`}
-                        style={{ width: `${displayScore}%` }}
-                      ></div>
-                    </div>
+                    {displayScore === 0 ? (
+                      <span className="text-[10px] text-blue-500 font-bold animate-pulse">Processing...</span>
+                    ) : (
+                      <>
+                        <span className={`w-10 text-xs font-black tracking-tighter ${getScoreColor(displayScore)}`}>
+                          {displayScore.toFixed(0)}%
+                        </span>
+                        <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner flex-shrink-0">
+                          <div
+                            className={`h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-1000 group-hover:opacity-80`}
+                            style={{ width: `${displayScore}%` }}
+                          ></div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </td>
                 <td className="px-8 py-6">

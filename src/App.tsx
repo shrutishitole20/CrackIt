@@ -4,6 +4,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Upload from './pages/Upload';
+import JobBoard from './pages/JobBoard';
+import AnalysisResults from './pages/AnalysisResults';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuthContext();
@@ -40,10 +42,26 @@ function AppContent() {
         }
       />
       <Route
-        path="/upload"
+        path="/upload/:roleId?"
         element={
           <ProtectedRoute>
             <Upload />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/jobs"
+        element={
+          <ProtectedRoute>
+            <JobBoard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analysis/:candidateId"
+        element={
+          <ProtectedRoute>
+            <AnalysisResults />
           </ProtectedRoute>
         }
       />

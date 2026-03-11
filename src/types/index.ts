@@ -10,6 +10,7 @@ export interface User {
 export interface Candidate {
   id: string;
   user_id: string;
+  role_id?: string;
   name: string;
   email?: string;
   phone?: string;
@@ -43,6 +44,7 @@ export interface ResumeScore {
   education_score: number;
   keyword_score: number;
   overall_score: number;
+  feedback_json?: any;
   parsed_at: string;
   updated_at: string;
 }
@@ -61,4 +63,14 @@ export interface ScoringRule {
   keyword_weight: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface Role {
+  id: string;
+  user_id?: string;
+  title: string;
+  description: string;
+  required_skills: string[];
+  target_score: number;
+  created_at: string;
 }
